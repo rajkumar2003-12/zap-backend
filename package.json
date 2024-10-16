@@ -1,0 +1,22 @@
+{
+  "name": "backend",
+  "scripts": {
+    "dev": "wrangler dev src/index.ts",
+    "deploy": "wrangler deploy --minify src/index.ts"
+  },
+  "dependencies": {
+    "@nanipatel/nani": "^1.0.1",
+    "@nanipatel/public": "^1.0.1",
+    "@nanipatel/zod": "^1.0.2",
+    "@nanipatel/zodrules": "^1.0.2",
+    "@nanipatel/zodupdates": "^1.0.2",
+    "@prisma/extension-accelerate": "^1.1.0",
+    "hono": "^4.6.2",
+    "jsonwebtoken": "^9.0.2",
+    "prisma": "^5.19.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240529.0",
+    "wrangler": "^3.57.2"
+  }
+}
