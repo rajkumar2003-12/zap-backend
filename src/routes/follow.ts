@@ -80,31 +80,68 @@ followRouter.post("/follow-unfollow/:followingId", async(c)=>{
 })
 
 
-followRouter.get("/get/:followId", async(c)=>{
-  try {
-    const userid = c.req.param("followId")
-    const authUserId = c.get("userId")
-    
-    const prisma= new PrismaClient({
-        datasourceUrl:c.env.DATABASE_URL
-    }).$extends(withAccelerate())
-
-
-    if (!userid || !authUserId) {
-      return c.json({ error: 'Invalid request. Missing user ID.' }, 400);
+followRouter.get("/get/:followId", async (c) => {
+    try {
+      const followId = c.req.param("followId");
+      const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+      }).$extends(withAccelerate());
+  
+      if (!followId) {
+        return c.json({ error: 'Invalid request. Missing follow ID.' }, 400);
+      }
+      const followers = await prisma.follower.findMany({
+        where: {
+          followingId: Number(followId), 
+        },
+        select: {
+          follower: {
+            select: {
+              id: true,
+              username: true,
+              name: true,
+            },
+          },
+        },
+      });
+  
+      const following = await prisma.follower.findMany({
+        where: {
+          userId: Number(followId), 
+        },
+        select: {
+          following: {
+            select: {
+              id: true,
+              username: true,
+              name: true,
+            },
+          },
+        },
+      });
+  
+      const formattedFollowers = followers.map((followerData) => ({
+        id: followerData.follower.id,
+        name: followerData.follower.name,
+        username: followerData.follower.username,
+      }));
+  
+      const formattedFollowing = following.map((followingData) => ({
+        id: followingData.following.id,
+        name: followingData.following.name,
+        username: followingData.following.username,
+      }));
+  
+      return c.json({
+        followersCount: formattedFollowers.length,
+        followingCount: formattedFollowing.length,
+        followersList: formattedFollowers,
+        followingList: formattedFollowing,
+      });
+    } catch (error) {
+      console.error("Error retrieving followers and following lists:", error);
+      return c.json({ error: "Failed to retrieve data" }, 500);
     }
-
-    const followStatus = await prisma.follower.findFirst({
-      where: {
-          userId: Number(authUserId),
-          followingId: Number(userid), 
-    }
-    });
-    c.status(200)
-    return c.json({ isFollowing: followStatus !== null });
-  } catch (error) {
-    console.error('Error checking follow status:', error);
-    return c.json({ error: 'Failed to check follow status' }, 500);
-  }
-})
+  });
+  
 

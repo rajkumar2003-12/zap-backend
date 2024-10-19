@@ -152,7 +152,7 @@ userRouter.get('/profile/:userId', async (c) => {
                 name: true,
                 username: true,
                 email: true,
-                followers: {select: {userId: true,},},
+                followers: {select:{userId: true,},},
                 following: {select: {followingId: true,},}
         }
     })
@@ -170,7 +170,6 @@ userRouter.get('/profile/:userId', async (c) => {
             followers: user.followers ? user.followers.length : 0, 
             following: user.following ? user.following.length : 0, 
         }
-
             c.status(200);
             return c.json({
                 formattedUser

@@ -15,7 +15,7 @@ const app = new Hono<{
 }>
 
 app.use('*', cors({
-  origin: ['http://localhost:5173','https://zap-appanumula-4j1vqoaty-a-rajkumars-projects.vercel.app/'], 
+  origin: ['http://localhost:5173','https://zap-rajkumar.vercel.app'], 
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
   allowHeaders: ['Content-Type', 'Authorization'],
   exposeHeaders:['content-length'],
