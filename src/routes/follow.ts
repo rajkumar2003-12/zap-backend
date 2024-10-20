@@ -131,12 +131,14 @@ followRouter.get("/get/:followId", async (c) => {
         name: followingData.following.name,
         username: followingData.following.username,
       }));
-  
-      return c.json({
+
+      const followList ={
         followersCount: formattedFollowers.length,
         followingCount: formattedFollowing.length,
         followersList: formattedFollowers,
         followingList: formattedFollowing,
+      }
+      return c.json({followList:followList
       });
     } catch (error) {
       console.error("Error retrieving followers and following lists:", error);
