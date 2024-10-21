@@ -90,6 +90,11 @@ followRouter.get("/get/:followId", async (c) => {
       if (!followId) {
         return c.json({ error: 'Invalid request. Missing follow ID.' }, 400);
       }
+      const currentUserId = c.get("userId"); 
+
+      if (!currentUserId) {
+        return c.json({ error: 'Unauthorized.' }, 401);
+      }
       const followers = await prisma.follower.findMany({
         where: {
           followingId: Number(followId), 
@@ -120,6 +125,13 @@ followRouter.get("/get/:followId", async (c) => {
         },
       });
   
+      const isFollowing = await prisma.follower.findFirst({
+        where: {
+          userId: Number(currentUserId),
+          followingId: Number(followId),
+        },
+      });
+
       const formattedFollowers = followers.map((followerData) => ({
         id: followerData.follower.id,
         name: followerData.follower.name,
@@ -137,9 +149,10 @@ followRouter.get("/get/:followId", async (c) => {
         followingCount: formattedFollowing.length,
         followersList: formattedFollowers,
         followingList: formattedFollowing,
+
       }
-      return c.json({followList:followList
-      });
+      c.status(200)
+      return c.json({followList:followList, isFollowing: !!isFollowing,});
     } catch (error) {
       console.error("Error retrieving followers and following lists:", error);
       return c.json({ error: "Failed to retrieve data" }, 500);
